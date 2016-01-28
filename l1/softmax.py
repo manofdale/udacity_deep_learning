@@ -12,6 +12,8 @@ print(softmax(scores))
 print("------------------")
 print(softmax(np.array(scores)/10.0))
 print("------------------")
+print(softmax(np.array(scores)*10.0))
+print("------------------")
 # Plot softmax curves
 import matplotlib.pyplot as plt
 

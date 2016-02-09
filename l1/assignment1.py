@@ -148,3 +148,65 @@ def randomize(dataset, labels):
 
 train_dataset, train_labels = randomize(train_dataset, train_labels)
 test_dataset, test_labels = randomize(test_dataset, test_labels)
+
+"""Problem 3
+
+Convince yourself that the data is still good after shuffling!"""
+
+plot_an_image(test_dataset[19], test_labels[19])
+plot_an_image(test_dataset[15000], test_labels[15000])
+plot_an_image(test_dataset[8900], test_labels[8900])
+plot_an_image(train_dataset[19], train_labels[19])
+plot_an_image(train_dataset[135000], train_labels[135000])
+plot_an_image(train_dataset[28900], train_labels[28900])
+
+"""Problem 4
+
+Another check: we expect the data to be balanced across classes. Verify that."""
+plt.hist(test_labels)
+plt.title("test classes")
+display(plt.show())
+plt.hist(train_labels)
+plt.title("train classes")
+display(plt.show())
+
+train_size = 200000
+valid_size = 10000
+
+valid_dataset = train_dataset[:valid_size, :, :]
+valid_labels = train_labels[:valid_size]
+train_dataset = train_dataset[valid_size:valid_size + train_size, :, :]
+train_labels = train_labels[valid_size:valid_size + train_size]
+print 'Training', train_dataset.shape, train_labels.shape
+print 'Validation', valid_dataset.shape, valid_labels.shape
+
+pickle_file = 'notMNIST.pickle'
+
+try:
+    f = open(pickle_file, 'wb')
+    save = {
+        'train_dataset': train_dataset,
+        'train_labels': train_labels,
+        'valid_dataset': valid_dataset,
+        'valid_labels': valid_labels,
+        'test_dataset': test_dataset,
+        'test_labels': test_labels,
+    }
+    pickle.dump(save, f, pickle.HIGHEST_PROTOCOL)
+    f.close()
+except Exception as e:
+    print 'Unable to save data to', pickle_file, ':', e
+    raise
+statinfo = os.stat(pickle_file)
+print 'Compressed pickle size:', statinfo.st_size
+
+"""Problem 5
+
+By construction, this dataset might contain a lot of overlapping samples, including training data that's also contained
+in the validation and test set! Overlap between training and test can skew the results if you expect to use your model
+in an environment where there is never an overlap, but are actually ok if you expect to see training samples recur when
+you use it. Measure how much overlap there is between training, validation and test samples. Optional questions:
+
+    What about near duplicates between datasets? (images that are almost identical)
+    Create a sanitized validation and test set, and compare your accuracy on those in subsequent assignments.
+"""
